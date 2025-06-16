@@ -17,6 +17,7 @@ Check muln0 n : n * 0 = 0.
 End CheckNat.
 
 (* 3.2 Terms, types, sorts *)
+Section Chap_3_2.
 
 Check 7 = 7 : Prop.
 Check 7 = 9 : Prop.
@@ -84,11 +85,14 @@ Proof.
   exact: (fun hAB hA => hAB hA).
 Qed.
 
+End Chap_3_2.
 
 (* 3.5 Inductive types *)
 
 (* This definition is already imported. *)
 (* Inductive nat : Set := O : nat | S (n : nat). *)
+
+Section Chap_3_5.
 
 Unset Printing Notations.
 Variable n' : nat.
@@ -106,6 +110,7 @@ Fixpoint addn n m :=
   | S p => S (addn p m)
   end.
 
+End Chap_3_5.
 
 (* 3.6 More connectives *)
 
@@ -114,6 +119,8 @@ Fixpoint addn n m :=
 (* Notation "A /\ B" := (and A B). *)
 
 (* Inductive prod (A B : Type) := pair (a : A) (b : B). *)
+Section Chap_3_6.
+
 
 Definition proj1 A B (p : A /\ B) : A :=
   match p with conj a _ => a end.
@@ -142,7 +149,7 @@ Notation "~ A" := (not A).
 Definition exfalso (P : Prop) (f : False) : P :=
   match f with end. (* no constructors, no branches *)
 
-Inductive eq (A:Type) (x:A) : A -> Prop := erefl : eq A x x.
+Inductive eq (A:Type) (x:A) : A -> Prop := erefl : @eq A x x.
 Notation "x = y" := (@eq _ x y).
 
 Print eq_ind.
@@ -248,3 +255,5 @@ move=> n IHn; case=> [_|m Hm]; first by exact: base.
 apply: step=> j Hjm; apply: IHn.
 apply: leq_trans Hjm Hm.
 Qed.
+
+End Chap_3_6.

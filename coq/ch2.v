@@ -1,6 +1,5 @@
 From mathcomp Require Import all_ssreflect.
 
-
 (* 2.1.1 Ground equalities *)
 
 Check 3 = 3.
@@ -9,7 +8,7 @@ Check false || true = true.
 Locate "=".
 About eq.
 
-Fail Check 3 = [:: 3].
+Fail Check 3 = [:: 3]. (* This does not accept Unset Strict Implicit. *)
 
 Lemma my_first_lemma : 3 = 3.
 Proof. Admitted.
@@ -314,6 +313,6 @@ Proof. by rewrite mulnBl !mulnDr addnC [m * _]mulnC subnDl !mulnn. Qed.
 Lemma odd_exp m n : odd (m ^ n) = (n == 0) || odd m.
 Proof.
   elim: n => // n IHn.
-  rewrite expnS odd_mul {}IHn orbC.
+  rewrite expnS oddM {}IHn orbC.
     by case: odd.
 Qed.
