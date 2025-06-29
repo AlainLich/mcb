@@ -59,9 +59,16 @@ Compute
 (* This definition is already imported *)
 (* Inductive bool := true | false. *)
 
-Check true.
+Check true. (* bool *)
+Check True. (* Prop *)
 
 Definition twoVthree (b : bool) := if b then 2 else 3.
+Print twoVthree.
+(* Notation "'if' c 'then' vT 'else' vF" := 
+                  match c in bool with
+                    | true => vT
+                    | _ => vF
+                  end : boolean_if_scope (default interpretation) *)
 
 Eval compute in twoVthree true.
 Eval compute in twoVthree false.
@@ -76,6 +83,11 @@ Definition orb  (b1 b2 : bool) := if b1 then true else b2.
 Check fun x => f x.+1.
 
 Definition non_zero n := if n is p.+1 then true else false.
+    (* non_zero = fun n : nat => match n with
+                                    | 0 => false
+                                    | _.+1 => true
+                                  end
+                      : nat -> bool *)
 
 Compute non_zero 5.
 
@@ -93,6 +105,7 @@ Definition three_patterns n :=
   | 0 => n
   end.
 
+(* Non exhaustive pattern matching *)
 Fail Definition wrong (n : nat) :=
   match n with 0 => true end.
 
@@ -109,6 +122,22 @@ Definition same_bool2 b1 b2 :=
   | false => match b2 with true => false | _ => true end
   end.
 
+  (* These are syntactically reducible (my opinion, also cbv's, 
+      and the book's !) *)
+  Goal same_bool=same_bool2.
+  Proof.  trivial.  (* cbv delta. reflexivity. *) Qed. 
+
+  (* Eval cbv delta in same_bool=same_bool2.
+       = (fun b1 b2 : bool => 
+          if b1 then if b2 then true else false
+                            else if b2 then false else true) =
+         (fun b1 b2 : bool => 
+          if b1 then if b2 then true else false
+                           else if b2 then false else true)
+     : Prop
+     (* Note: delta-reduction: unfolding of transparent constants *)
+*)
+Eval cbv delta in same_bool=same_bool2.
 
 (* 1.2.3 Recursion on natural numbers *)
 
@@ -174,7 +203,7 @@ Check 1 :: 2 :: 3 :: nil.
 Check fun l => 1 :: 2 :: 3 :: l.
 
 Definition head T (x0 : T) (s : seq T) := if s is x :: _ then x else x0.
-
+Eval red in (head 100 (cons 2 (cons 1 nil))).
 
 (* 1.3.2 Recursion for sequences *)
 
@@ -314,6 +343,16 @@ Eval compute in fst (4,5).
 
 (* iter add *)
 Definition addn n1 n2 := iter n1 S n2.
+(* Notation "[ 'eta' f 'with' d1 , .. , dn ]" :=
+       (SimplFunDelta (fun _ => app_fdelta d1 .. (app_fdelta dn f) ..)) 
+       : function_scope
+  (default interpretation)
+
+  addn = fun n1 : nat => [eta iter n1 succn]
+     : nat -> nat -> nat
+*)
+
+Locate "eta" .
 
 Eval compute in addn 3 4.
 
@@ -339,6 +378,33 @@ Eval compute in rev [:: 1; 2; 3].
 
 (* flatten *)
 Definition flatten T (s : seq (seq T)) := foldr cat [::] s.
+        (* NOTE: cat is list catenation with 2 (seq T) args, not a cons!*)
+
+(*
+Fixpoint foldr a s :=
+  if s is x :: xs then f x (foldr a xs) else a.
+
+foldr = fun (T A : Type) (f : T -> A -> A) 
+      => fix foldr (a : A) (s : seq T) {struct s} : A 
+         := match s with
+                 | [::] => a
+                 | x :: xs => f x (foldr a xs)
+   .         end
+     : forall [T A : Type], (T -> A -> A) -> A -> seq T -> A
+
+Arguments foldr [T A]%type_scope f%function_scope a s%seq_scope
+
+cat = fun T : Type 
+    => fix cat (s1 s2 : seq T) {struct s1} : seq T 
+       := match s1 with
+            | [::] => s2
+            | x :: s1' => x :: cat s1' s2
+          end
+     : forall {T : Type}, seq T -> seq T -> seq T
+
+Arguments cat {T}%type_scope (s1 s2)%seq_scope
+*)
+Print cat.
 
 Eval compute in
   flatten [:: [:: 1; 2; 3]; [:: 4; 5] ].

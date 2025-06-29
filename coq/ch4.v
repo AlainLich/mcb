@@ -1,6 +1,5 @@
 From mathcomp Require Import all_ssreflect.
 
-
 (* 4.1.1 Pulling from the stack *)
 
 Goal forall xy, prime xy.1 -> odd xy.2 -> 2 < xy.2 + xy.1.
@@ -16,7 +15,7 @@ Goal forall xy, prime xy.1 -> odd xy.2 -> 2 < xy.2 + xy.1.
 Abort.
 
 Goal forall xy, prime xy.1 -> odd xy.2 -> 2 < xy.2 + xy.1.
-  move => [x y] /= /prime_gt1-x_gt1 odd_y.
+  move => [x y]  /=  /prime_gt1-x_gt1  odd_y.
 Abort.
 
 Goal forall xy, prime xy.1 -> odd xy.2 -> 2 < xy.2 + xy.1.
@@ -32,7 +31,6 @@ Qed.
 
 About ltn_addl.
 
-
 (* 4.1.2 Working on the stack *)
 
 Goal forall xy, prime xy.1 -> odd xy.2 -> 2 < xy.2 + xy.1.
@@ -40,7 +38,7 @@ Goal forall xy, prime xy.1 -> odd xy.2 -> 2 < xy.2 + xy.1.
 Abort.
 
 Goal forall xy, prime xy.1 -> odd xy.2 -> 2 < xy.2 + xy.1.
-  move => [x y] /= /prime_gt1/ltnW.
+  move => [x y] /= /prime_gt1 /ltnW.
 Abort.
 
 Goal (forall n, n * 2 = n + n) -> 6 = 3 + 3.

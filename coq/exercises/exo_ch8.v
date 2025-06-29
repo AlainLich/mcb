@@ -1,5 +1,5 @@
-From mathcomp Require Import all_ssreflect.
 From HB Require Import structures.
+From mathcomp Require Import all_ssreflect.
 
 Module WR_module.
 
@@ -54,17 +54,17 @@ apply: (iffP idP).
   move => ->. by case: y . 
 Qed.
 
-(* Inspired by coq/user-contrib/mathcomp/ssreflect/ssrnat.v , 
-    enables the notation == e.g North == South*)
+(* We sould need Equality.sort for this to typeCheck*)
 Fail Check  North == South.
+Fail Check  North == North.
+Check  North = South.
+Check  North = North.
+
 
 HB.about hasDecEq.Build.
 #[log, verbose]
 HB.instance Definition _ := @hasDecEq.Build windrose windrose_eq windrose_eqP.
 
-(* This would be redundant with above !!
-HB.instance Definition _ := hasDecEq.Build _ windrose_eqP.
-*)
 Arguments windrose_eq !a !b.  (* Ensures the function will be unfolded only if all 
                                  the args marked with ! evaluate to constructors. *)
 Arguments windrose_eqP {x y}. (* Here we need to know the hidden names, this declares
@@ -74,22 +74,16 @@ Arguments windrose_eqP {x y}. (* Here we need to know the hidden names, this dec
 Check  North == South.
 Eval compute in  North == South.
 
-(* in fintype.v 
-    HB.instance Definition _ := isCountable.Build fT fin_pickleK.
-    HB.instance Definition _ := isFinite.Build fT f. *)
 
 HB.about isCountable.Build.
 #[log, verbose]
 HB.instance Definition _ := isCountable.Build _ pcan_o2w_opt.
-(*
-(pickle \o  w2o): windrose -> nat
-(pcomp o2w_opt unpickle): nat -> option windrose
-pcan_o2w_opt : pcancel (pickle \o  w2o) (pcomp o2w_opt unpickle)
-*)
-
-HB.about  isFinite.Build.
 
 
+Remark windrose_isCountable:  isCountable windrose.
+Proof. 
+by econstructor; eapply pcan_o2w_opt.
+Qed.
 
 Definition wr_enum  := [:: North; South; East; West] .
 Lemma wr_enumP : Finite.axiom wr_enum.
@@ -97,41 +91,43 @@ Proof. rewrite /Finite.axiom /wr_enum => elt.
        elim Helim: elt;  by []. 
 Qed.
 
+HB.about isFinite.Build.
+
 #[log, verbose]
 HB.instance Definition _:= @isFinite.Build windrose wr_enum wr_enumP. 
+
+Remark windrose_isFinite:  isFinite windrose.
+Proof.
+econstructor.
+Unshelve. 
+    - by apply wr_enumP.
+Qed.
 
 #[log, verbose]
 HB.instance Definition _:= choice_isCountable__to__choice_hasChoice.
 
-(* This is a consequence of isCountable *)
-Remark windrose_has_Choice:  hasChoice windrose.
+Remark windrose_hasChoice:  hasChoice windrose.
 Proof.
-apply choice_isCountable__to__choice_hasChoice.
+apply  choice_isCountable__to__choice_hasChoice.
 Qed.
 
-(*  HB: hasChoice.Build is a factory constructor (from "./choice.v", line 261)
-    HB: hasChoice.Build requires its subject to be already equipped with:
-    HB: hasChoice.Build provides the following mixins:
-        - hasChoice
-    HB: arguments: hasChoice.Build T [find_subdef] choice_correct_subdef choice_complete_subdef choice_extensional_subdef
-        - T : Type
-        - find_subdef : pred T -> nat -> option T
-        - choice_correct_subdef :
-            forall (P : pred T) (n : nat) (x : T),
-            Choice.InternalTheory.find P n = Some x -> P x
-        - choice_complete_subdef :
-            forall P : pred T,
-            (exists x : T, P x) -> exists n : nat, Choice.InternalTheory.find P n
-        - choice_extensional_subdef :
-            forall P Q : pred T,
-            P =1 Q -> Choice.InternalTheory.find P =1 Choice.InternalTheory.find Q
-*)
+Remark Rem1: #|[set North; South]| == 2.
+Proof.
+have HH:=  enum_tupleP [set North; South]. 
+by rewrite -(eqP HH) (perm_size (enum_setU _ _)) undup_id !enum_set1 =>//=. 
+Qed.
 
 
-(* Now I need to understand why this fails ???*)
-Fail Goal (#| windrose | == 4).
+Fail Check North:>'I_4.
+(* This adds something *)
+Coercion  w2o : windrose >-> ordinal.
+Print Coercion Paths windrose ordinal.
 
-Lemma ord4_is_w : cancel o2w w2o.
+Check  #|'I_4| = 4.
+Check  #| wr_enum| = 4.
+Check North:>'I_4.
+
+Lemma ord4_is_windrose : cancel o2w w2o.
 Proof.
 move=> x; apply: val_inj; case: x.
 by do 5! [ case=> [?|//]; first by rewrite /= inordK ].
@@ -143,35 +139,21 @@ Proof. by []. Qed.
 (* We just check the notations in eqtype! *)
 Goal North != South. Proof. by []. Qed.
 
-Fail Check  (North \in windrose). (* Need choice or fintype ? *)
+Fail Check  (North \in windrose). 
 Fail Goal (#|enum windrose| == 4).
 Fail Goal ( size (enum windrose)  == 4).
-Locate "#| _ |".
 
-Goal  (card.body (mem 'I_4) ) == 4. Proof. by rewrite card_ord. Qed.
-
-
-(* Notation "#| A |" := (card.body (mem A)) : nat_scope (default interpretation)*)
-
-(* For comparison*)
-Goal (#|'I_4| == 4). Proof. by rewrite card_ord. Qed.
-
-(* Until we get the Notation right ... this is meaningless 
-Goal  (North \in windrose).
+Goal  #|'I_4| == 4. Proof. by rewrite card_ord. Qed.
+Goal  #| wr_enum| = 4.
 Proof.
-by rewrite inE.
+have H1: (uniq wr_enum); first by [].
+by rewrite ((@card_uniqP _ wr_enum)  H1).
 Qed.
-*)
-HB.about windrose.
-(*
-HB: windrose is canonically equipped with structures:
-    - Countable
-      choice.Choice
-      (from "(stdin)", line 61)
-    - eqtype.Equality
-      (from "(stdin)", line 42)
-    - fintype.Finite
-      (from "(stdin)", line 78)
-*)
 
 
+Goal  North \in wr_enum.
+Proof. by []. Qed.
+
+(* Now the only issue is that we do not have the nice notation ..*)
+
+End  WR_module.

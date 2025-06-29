@@ -1,5 +1,5 @@
 From mathcomp Require Import all_ssreflect.
-
+(* Looks like Chap 7 p. 137 *)
 Section SubTypeKit.
 Variables (T : Type) (P : pred T).
 

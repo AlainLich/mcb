@@ -1,4 +1,6 @@
+From HB Require Import structures.
 From mathcomp Require Import all_ssreflect.
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -16,8 +18,9 @@ Module DefTupleOf.
 
   Example just_tuple_attempt n (t : n.-tuple nat) :
     size (rev [seq 2 * x | x <- rev t]) = size t.
-  Proof. rewrite !size_tuple. Admitted.
-
+  Proof. by rewrite size_rev size_map  size_rev.
+  Qed.
+  
   Notation "X (*...*)" := 
     (let x := X in let y := _ in x) (at level 100, format "X (*...*)").
   Notation "[LHS 'of' equation ]" := 
@@ -30,23 +33,26 @@ Module DefTupleOf.
       let RDX := size (rev t) in
       [unify LHS with RDX].  
 
-  Variables (n : nat) (A B : Type).
+  Section Lemmas.
+      Variables (n : nat) (A B : Type).
 
-  Lemma rev_tupleP (t : n.-tuple A) : size (rev t) == n.
-  Proof. by rewrite size_rev size_tuple. Qed.
+      Lemma rev_tupleP (t : n.-tuple A) : size (rev t) == n.
+      Proof. by rewrite size_rev size_tuple. Qed.
 
-  Canonical rev_tuple (t : n.-tuple A) := Tuple (rev_tupleP t).
+      Canonical rev_tuple (t : n.-tuple A) := Tuple (rev_tupleP t).
 
-  Lemma map_tupleP (f : A -> B) (t : n.-tuple A) : size (map f t) == n.
-  Proof. by rewrite size_map size_tuple. Qed.
+      Lemma map_tupleP (f : A -> B) (t : n.-tuple A) : size (map f t) == n.
+      Proof. by rewrite size_map size_tuple. Qed.
 
-  Canonical map_tuple (f : A -> B) (t : n.-tuple A) := Tuple (map_tupleP f t).
+      Canonical map_tuple (f : A -> B) (t : n.-tuple A) := Tuple (map_tupleP f t).
 
-  Lemma cons_tupleP (t : n.-tuple A) x : size (x :: t) == n.+1.
-  Proof. by rewrite /= size_tuple. Qed.
+      Lemma cons_tupleP (t : n.-tuple A) x : size (x :: t) == n.+1.
+      Proof. by rewrite /= size_tuple. Qed.
 
-  Canonical cons_tuple x (t : n.-tuple A) : n.+1.-tuple A :=
-    Tuple (cons_tupleP t x).
+      Canonical cons_tuple x (t : n.-tuple A) : n.+1.-tuple A :=
+        Tuple (cons_tupleP t x).
+  End Lemmas.
+
 End DefTupleOf.
 
 Example just_tuple n (t : n.-tuple nat) :
