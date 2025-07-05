@@ -1,6 +1,7 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect.
 
+(* The exercise, done by constructing all functions like pickle.. by hand *)
 Module WR_module.
 
 Inductive windrose : Type := North | South | East | West.

@@ -171,20 +171,6 @@ End Test1.
 
 (** UNTIL WE PROVIDE THE COERCIONS/CANONICALS this tests the ssreflect library...
 *)
-
-  (* TBD **** NOT ADAPTED FROM BOOK **** DOES NOT WORK AS IS **** TBD ***
-     Look at this in library,... seems changed (coercion to eqtype ??)*)
-  (*
-  Definition ordinal_eqMixin n := Eval hnf in [eqMixin of (@ordinal n) by <:].
-  Canonical ordinal_eqType n :=
-    Eval hnf in EqType (ordinal n) (ordinal_eqMixin n). 
-  *)
-
-(* Definition ord_enum' n : seq (ordinal' n) := map ( nat_to_ord_subtype n _ ) (iota 0 n).
-*)
-(*
-Definition ord_enum' n : seq (ordinal' n) := pmap insub (iota 0 n).
-*)
 Check ord_enum.
 End Ordinal74.
 
@@ -202,13 +188,6 @@ Proof.
     by rewrite -(mem_map (@ord_inj n)) (val_ord_enum n) mem_iota ltn_ord.
 Qed.
 
-(*
-Definition ordinal_finMixin n :=
-  Eval hnf in UniqFinMixin (ord_enum_uniq n) (@mem_ord_enum n).
-
-Canonical ordinal_finType n :=
-  Eval hnf in FinType (ordinal n) (ordinal_finMixin n).
-*)
 
 Lemma tnth_default T n (t : n.-tuple T) : 'I_n -> T.
 Proof. by rewrite -(size_tuple t); case (tval t) => [|//] []. Qed.
@@ -216,7 +195,6 @@ Proof. by rewrite -(size_tuple t); case (tval t) => [|//] []. Qed.
 Definition tnth T n (t : n.-tuple T) (i : 'I_n) : T :=
   nth (tnth_default t i) t i.
 
-(* Locate enum_rank. Constant mathcomp.ssreflect.fintype.enum_rank *)
 
 (* Another use of ordinals is to express the position of an inhabitant of a finType 
    in its enumeration.*)

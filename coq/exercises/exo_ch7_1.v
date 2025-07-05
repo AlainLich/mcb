@@ -70,12 +70,6 @@ End TupleDef.
    GLTuple, makes things easier. (In particular when looking at recognizing equality.)
 *)
 
-(*
-   Module Exports.
-     Global Arguments Axioms_ {_}.
-   End Exports.
-   Notation BasicTuple_of X1 := ( BasicTuple_of.phant_axioms X1).
-*)
 #[log, verbose]
 HB.mixin Record BasicTuple_of (T:eqType) := {
     glen :> nat;
@@ -84,32 +78,11 @@ HB.mixin Record BasicTuple_of (T:eqType) := {
 HB.about BasicTuple_of.
 About BasicTuple_of.
 
-(*
-Module Exports.
-#[reversible] Coercion sort : GenLenTuple.basicTuple.type >-> eqtype.Equality.type.
-#[reversible] Coercion GenLenTuple_BasicTuple_of_mixin : GenLenTuple.basicTuple.axioms_ >-> GenLenTuple.BasicTuple_of.axioms_.
-End Exports.
-
-Notation basicTuple X1 := ( basicTuple.axioms_ X1).
- *)
 #[primitive, log, verbose] (***)
 HB.structure Definition basicTuple:= {T of BasicTuple_of T & }.
 About basicTuple.
 HB.about basicTuple.
 
-(* Very complex log output ... summary:
-      HB: GLTuple_of is a factory (from "(stdin)", line 6)
-      HB: GLTuple_of operations and axioms are:
-         - ln_ok
-         - has_cons
-         - has_map
-         - has_rev
-         - mapA
-      HB: GLTuple_of requires the following mixins:
-         - BasicTuple_of
-      HB: GLTuple_of provides the following mixins:
-         - GLTuple_of
-*)
 #[log, verbose] 
 HB.mixin Record GLTuple_of (T:eqType) of BasicTuple_of T := {
     ln_ok: forall n, BasicTuple_of.glen T n  == size (tval _ _ (BasicTuple_of.gval T n ));
@@ -127,30 +100,6 @@ HB.mixin Record GLTuple_of (T:eqType) of BasicTuple_of T := {
 About GLTuple_of.
 HB.about GLTuple_of.
 
-(* Shows coercions:
-Module Exports.
-      #[reversible] Coercion sort : GenLenTuple.fullTuple.type >-> eqtype.Equality.type.
-      Definition GenLenTuple_fullTuple_class__to__GenLenTuple_basicTuple_class : 
-         forall T : eqType, axioms_ T -> basicTuple.axioms_ T :=
-            fun (T : eqType) (c : axioms_ T) =>
-            {| basicTuple.GenLenTuple_BasicTuple_of_mixin :=
-               GenLenTuple_BasicTuple_of_mixin _ c|}.
-
-      #[reversible] Coercion GenLenTuple_fullTuple_class__to__GenLenTuple_basicTuple_class : 
-         GenLenTuple.fullTuple.axioms_ >-> GenLenTuple.basicTuple.axioms_.
-
-      Definition GenLenTuple_fullTuple__to__GenLenTuple_basicTuple : 
-         type ->  basicTuple.type := fun s : type => {| basicTuple.sort := s; basicTuple.class := class s |}.
-
-      #[reversible] Coercion GenLenTuple_fullTuple__to__GenLenTuple_basicTuple : 
-          GenLenTuple.fullTuple.type >-> GenLenTuple.basicTuple.type.
-      Global Canonical GenLenTuple_fullTuple__to__GenLenTuple_basicTuple.
-      #[reversible] Coercion GenLenTuple_BasicTuple_of_mixin : 
-          GenLenTuple.fullTuple.axioms_ >-> GenLenTuple.BasicTuple_of.axioms_.
-      #[reversible] Coercion GenLenTuple_GLTuple_of_mixin :
-           GenLenTuple.fullTuple.axioms_ >-> GenLenTuple.GLTuple_of.axioms_.
-End Exports.
-*)
 #[primitive, log, verbose] (***)
 HB.structure Definition fullTuple:= {T of GLTuple_of T & }.
 
@@ -177,23 +126,6 @@ Proof.
     by apply  {| tval:= s;pr_sz := hsz |}.
 Defined.
 
-(* Generates:
-    mk_basic_tuple_of_seq' =
-    fun (T : eqType) (s : seq T) =>
-    {|
-        basicTuple.GenLenTuple_BasicTuple_of_mixin :=
-        {|
-          BasicTuple_of.glen := size s;
-          BasicTuple_of.gval :=
-             ssr_have_upoly
-                (eqxx (T:=Datatypes_nat__canonical__eqtype_Equality) (size s))
-                 [eta LTuple (size s) T s]
-        |}
-    |}
-     : forall T : eqType, seq T -> basicTuple.axioms_ (T : eqType)
-
-Arguments mk_basic_tuple_of_seq T s%seq_scope
-*)
 (* Try a more  explicit expression *)
 Definition mk_basic_tuple_of_seq (T:eqType) (s: seq T)
      : basicTuple (T:eqType)

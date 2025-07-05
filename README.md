@@ -9,7 +9,7 @@ in <https://github.com/AlainLich/mcb/coq> in order to
 - Be compatible with "The Coq Proof Assistant, version 8.20.1;  compiled with OCaml 4.14.2"
 - Accomodate HB (Hierarchy Builder) in Chapters 7 and following.
 - In practice, I am using the Platform version `CP.~8.20~2025.01`, running in a container on an Apple M2, and accessed via `VScoq` <https://github.com/rocq-prover/vsrocq>.
-- Concerning the *directory organization*, I have added a `coq/exercises` which contains (possibly cleaned up) versions of the exercises done while preparing this. The updates in the original files are (intended) minimal, with details in the `exercise`s. The file names designate the starting point file in `coq`.
+- The added directory [coq/exercises](./coq/exercises)  contains (possibly cleaned up) versions of the exercises done while preparing this. The updates in the original files are (intended) minimal, with details in the `exercise`s. The file names designate the starting point file in `coq`. Detailed notes in [coq/exercises/ExerciseNotes.md](coq/exercises/ExerciseNotes.md).
  
 **Notes** 
   - I have found the HB changes quite disruptive, when (naively) trying to experiment with the 
@@ -25,7 +25,8 @@ the tutorial <https://github.com/rocq-prover/platform-docs/blob/main/src/Tutoria
             <https://github.com/math-comp/hierarchy-builder.git>.
 
     1.  "How to declare MathComp instances": <https://github.com/math-comp/math-comp/wiki/How-to-declare-MathComp-instances>
- 
+
+
 # From original repository
 
 ## Building

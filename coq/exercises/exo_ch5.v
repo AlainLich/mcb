@@ -6,7 +6,6 @@ Set Implicit Arguments.
 
 (* Idea: try to do these without cheating, these are all in ssreflect's
    library.
-
 *)
 
 Section Check_Reflect.

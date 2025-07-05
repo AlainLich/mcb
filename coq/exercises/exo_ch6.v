@@ -59,7 +59,7 @@ Qed.
 
 End TryBigops.
 
-(* Concerns Chaap 6.5 p. 125*)
+(* Concerns Chap 6.5 p. 125*)
 Section Using_Generic_Equality.
 
 Lemma test (x y : nat) : x == y -> x + y == y + y.

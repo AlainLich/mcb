@@ -67,17 +67,6 @@ HB.instance Definition  ntuple_Eqtype_Tuple n (T:eqType) (nt: n.-tuple T)
                             (* : Is_eqty_Tuple n T  (* Can be inferred !!*)*)
                             := Is_eqty_Tuple.Build n T nt.
 
-(*
-Set Printing Coercions.
-Check  (ntuple_Eqtype_Tuple nat).
-Check  (ntuple_Eqtype_Tuple (seq nat)).
-Check  (ntuple_Eqtype_Tuple (n.-tuple nat)).
-Check  (@ntuple_Eqtype_Tuple n  (n.-tuple nat)).
-Check  (@ntuple_Eqtype_Tuple (n.+1)  (n.-tuple nat)).
-Check forall n (T:eqType), Is_eqty_Tuple (n.+1)  (n.-tuple T).
-Check forall n (T:eqType), Is_eqty_Tuple (n.+1)  (n.-tuple (seq T)).
-Eval cbv beta in forall n (T:eqType), Is_eqty_Tuple (n.+1)  (n.-tuple (seq T)).
-*)
 
 
 HB.about  Is_eqty_Tuple.
@@ -95,15 +84,7 @@ _ <- Is_eqty_Tuple.val ( ntuple_Eqtype_Tuple )
 *)
 
 Print  Tuple_eqType.type. 
-  (* Record type (n : nat) : Type := Pack { sort : eqType; 
-                                            class : Tuple_eqType.axioms_ n sort }.
 
-
-Arguments Tuple_eqType.type n%nat_scope
-Arguments Tuple_eqType.Pack [n]%nat_scope [sort] class
-Arguments Tuple_eqType.sort [n]%nat_scope record
-Arguments Tuple_eqType.class [n]%nat_scope record
-  *)
 HB.about Is_eqty_Tuple.Build.
 
 Locate Tuple_eqType.type.
@@ -151,34 +132,17 @@ Check (@tval 3 ( 5.-tuple nat) t ).
 Unset Printing All.
 End Try_It.
 
-Search "subType".
-  Search "subType".
 
-(* Cette notation n'existe plus ... cf.
+(* This does not exist anymore ... cf.
  less -N +565 /mount/built/opam/CP.~8.20~2025.01/lib/coq/user-contrib/mathcomp/ssreflect/eqtype.v
- Current:
+ Current: isNew isSub
 *)
 Locate "[ 'subType' 'for' v ]".
 Locate "[ 'isNew' 'for' v ]".
-(* Notation "[ 'isNew' 'for' v ]" := (@NewMixin _ _ v _ _ _) : form_scope
-   (default interpretation) (only printing)
-Notation "[ 'isNew' 'for' v ]" := 
-   (@NewMixin _ _ v _ 
-             (fun K K_S u => let (x) as u0 return (K u0) 
-                  := u in K_S x)(@vrefl_rect _ _)) 
-    : form_scope (default interpretation) (only parsing)
-*)
+
 
 Locate "[ 'isSub' 'for' v ]".
-(*Notation "[ 'isSub' 'for' v ]" := (@isSub.phant_Build _ _ _ v _ _ _) : form_scope
-  (default interpretation) (only printing)
-  Notation "[ 'isSub' 'for' v ]" := 
-     (@isSub.phant_Build _ _ _ v _ 
-                        (fun K K_S u =>let (x, Px) as u0 return (K u0) 
-                            := u in K_S x Px)
-     (@vrefl_rect _ _)) : 
-     form_scope (default interpretation) (only parsing)
-*)
+
 
 (* Examples of isSub and isNew *)
 Section Try_It_1.
@@ -197,58 +161,8 @@ Check tuple_of.
 
 (*  This clones the canonical subType structure for n.-tuple nat.  *)
 Canonical tuple_subType n s :=  Eval hnf in [isSub for (@tval n s)].
-(* This comes with warnings and some redundancies
-  tuple_subType is defined
-  Projection value has no head constant:
-  fun (K : n.-tuple s -> Type)
-  (K_S : forall (x : seq s) (Px : (fun x0 : seq s => size x0 == n) x),
-  K (Tuple (n:=n) (tval:=x) Px)) (u : n.-tuple s) =>
-  let (x, Px) as u0 return (K u0) := u in K_S x Px in canonical instance
-  tuple_subType of isSub.Sub_rect, ignoring it.
-  [projection-no-head-constant,records,default]
-  
-  Ignoring canonical projection to vrefl_rect by isSub.SubK_subproof in
-  tuple_subType: redundant with HB_unnamed_factory_6
-  [redundant-canonical-projection,records,default]
-  
-  Ignoring canonical projection to Tuple by isSub.Sub in tuple_subType: redundant
-  with tuple.HB_unnamed_factory_1 
-  [redundant-canonical-projection,records,default]
-  
-  Ignoring canonical projection to tval by isSub.val_subdef in tuple_subType:
-  redundant with tuple.HB_unnamed_factory_1
-  [redundant-canonical-projection,records,default]
-*)
-(*  This does not change things
-    Canonical tuple_subType n s := Eval hnf in [isSub for (@tval n s)].
 
-*)
-(* Documented in eqtype.v:
- (* ** Specific notations                                                      *)
- (*   [isSub of S for S_val] == subtype for S where S_val : S -> T is the      *)
- (*     first projection of a type S isomorphic to {x : T | P}; if S_val is    *)
- (*     specified, then it replaces the inferred projector.                    *)
 
- (*   [isSub for S_val] := [isSub of _ for S_val]                              *)
- (*     It clones the canonical subType structure for S.                       *)
-
- (*   [isNew of S for S_val] == subtype for S where S_val : S -> T is the      *)
- (*     projection of a type S isomorphic to T; in this case P must be predT   *)
- (*   [isNew for S_val] := [isNew of _ for S_val]                              *)
-
- (*   [isSub for S_val by Srect], [isNew for S_val by Srect] ==                *)
- (*     variants of the above where the eliminator is explicitly provided.     *)
- (*     Here S no longer needs to be syntactically identical to {x | P x} or   *)
- (*     wrapped T, but it must have a derived constructor S_Sub satisfying an  *)
- (*     eliminator Srect identical to the one the Coq Inductive command would  *)
- (*     have generated, and S_val (S_Sub x Px) (resp. S_val (S_sub x) for the  *)
- (*     newType form) must be convertible to x.                                *)
- (*     variant of the above when S is a wrapper type for T (so P = predT).    *)
- (*   Subtypes inherit the eqType structure of their base types; the generic   *)
- (*   structure should be explicitly instantiated using the                    *)
- (*     [Equality of S by <:]                                                  *)
- (*   construct; this pattern is repeated for all the combinatorial interfaces *)
-*)
 Fail Canonical tuple_subType' n s := [isNew for (@tval _ _)]   .
 (* The command has indeed failed with message:
     Destructing let on this type expects 2 variables. Issue is in evaluating
